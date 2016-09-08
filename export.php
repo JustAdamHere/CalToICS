@@ -73,7 +73,25 @@ END:VTIMEZONE
 		//echo "<br>".$singleEvent["day"];
 		$DTSTART = strtotime("next ".$singleEvent["day"], strtotime($weekStartDate)) + strtotime("1970-01-01T".$singleEvent["start"]);
 		$DTEND = $DTSTART + strtotime("1970-01-01T".$singleEvent["duration"]);
-		//$singleEvent["weeks"]
+		/*$splitIndividuals = explode(",", $singleEvent["weeks"])
+		foreach ($splitIndividuals as $split)
+		{
+			if (preg_match(".*-.*", $split))
+			{
+				$counters = explode("-", $split);
+				for ($counter[0])
+			}
+		}
+		echo "<br><br>";
+		print_r();
+		echo "<br><br>";*/
+
+		// Author of routine: hakre, http://stackoverflow.com/questions/7698664/converting-a-range-or-partial-array-in-the-form-3-6-or-3-6-12-into-an-arra
+		$BYWEEKNO = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
+    		return implode(',', range($m[1], $m[2]));
+		}, $singleEvent["weeks"]);
+		// End of Routine by hakre
+
 		//echo "<br>STRTOTIME: ".strtotime($year." week ".$weekStart." at ".$singleEvent['start']." on ".$singleEvent['day']);
 		//echo "<br>STRTOTIME: ".strtotime($singleEvent['day'].", ".$weekStartDate);
 		/*echo "<br>";
@@ -128,6 +146,8 @@ SEQUENCE:0
 STATUS:TENTATIVE
 
 TRANSP:OPAQUE
+
+RRULE:FREQ=WEEKLY;WKST=MO;BYWEEKNO=<?= escapeString($BYWEEKNO) ?>
 
 END:VEVENT
 	<?php } ?>
