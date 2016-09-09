@@ -24,7 +24,7 @@ header('Content-Disposition: attachment; filename=' . $filename);
 
 // Converts a timestamp to the appropriate string format.
 function dateToCal($timestamp) {
-  return date('Ymd\THis\Z', $timestamp);
+  return date('Ymd\THisT', $timestamp);
 }
 
 // Escapes a string of characters.
@@ -32,7 +32,7 @@ function escapeString($string) {
   return preg_replace('/([\,;])/','\\\$1', $string);
 }
 
-$offset = 39;
+$offset = 37;
 $startYear = 2016;
 
 // Prints the formatted ICS file content.
@@ -44,6 +44,7 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Default Calendar
 X-WR-TIMEZONE:Europe/London
+
 BEGIN:VTIMEZONE
 TZID:Europe/London
 X-LIC-LOCATION:Europe/London
@@ -72,7 +73,7 @@ END:VTIMEZONE
 		$weekStartDate = date("Y-m-d", strtotime($year."W".$weekStart));
 		//echo "<br>".$singleEvent["day"];
 		$DTSTART = strtotime("next ".$singleEvent["day"], strtotime($weekStartDate)) + strtotime("1970-01-01T".$singleEvent["start"]);
-		$DTEND = $DTSTART + strtotime("1970-01-01T".$singleEvent["duration"]);
+		$DTEND = $DTSTART + str_pad(strtotime("1970-01-01T".$singleEvent["duration"]), "0", STR_PAD_LEFT);
 		/*$splitIndividuals = explode(",", $singleEvent["weeks"])
 		foreach ($splitIndividuals as $split)
 		{
@@ -87,10 +88,18 @@ END:VTIMEZONE
 		echo "<br><br>";*/
 
 		// Author of routine: hakre, http://stackoverflow.com/questions/7698664/converting-a-range-or-partial-array-in-the-form-3-6-or-3-6-12-into-an-arra
-		$BYWEEKNO = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
+		$weekNumbers = explode(",", preg_replace_callback('/(\d+)-(\d+)/', function($m) {
     		return implode(',', range($m[1], $m[2]));
-		}, $singleEvent["weeks"]);
+		}, $singleEvent["weeks"]));
 		// End of Routine by hakre
+
+		// Repeats to:
+		$weekEnd = str_pad((($offset + max($weekNumbers)) % 52), 2, "0", STR_PAD_LEFT);
+		$yearAddOn = floor(($offset + max($weekNumbers)) / 52);
+		$year = $startYear + $yearAddOn;
+		$weekEndDate = date("Y-m-d", strtotime($year."W".$weekEnd));
+		$WEEKUNTIL = strtotime("next ".$singleEvent["day"], strtotime($weekEndDate) + 60*60*24); // Adds a day after the UNTIL, so that the last event will definitely be included.
+
 
 		//echo "<br>STRTOTIME: ".strtotime($year." week ".$weekStart." at ".$singleEvent['start']." on ".$singleEvent['day']);
 		//echo "<br>STRTOTIME: ".strtotime($singleEvent['day'].", ".$weekStartDate);
@@ -125,15 +134,17 @@ END:VTIMEZONE
 
 BEGIN:VEVENT
 
+TZID:BST
+
 UID:<?= uniqid() ?>
 
 SUMMARY:<?= escapeString($singleEvent["activity"]." — ".$singleEvent["module"]) ?>
 
-DTSTART:<?= DateToCal($DTSTART) ?>
+DTSTART;TZID=Europe/London:<?= DateToCal($DTSTART) ?>
 
-DTEND:<?= dateToCal($DTEND) ?>
+DTEND;TZID=Europe/London:<?= dateToCal($DTEND) ?>
 
-DTSTAMP:<?= dateToCal(time()) ?>
+DTSTAMP;TZID=Europe/London:<?= dateToCal(time()) ?>
 
 LOCATION:<?= escapeString($singleEvent["room"].", University of Nottingham") ?>
 
@@ -147,7 +158,7 @@ STATUS:TENTATIVE
 
 TRANSP:OPAQUE
 
-RRULE:FREQ=WEEKLY;WKST=MO;BYWEEKNO=<?= escapeString($BYWEEKNO) ?>
+RRULE:FREQ=WEEKLY;WKST=MO;UNTIL=<?= dateToCal($WEEKUNTIL) ?>
 
 END:VEVENT
 	<?php } ?>
