@@ -24,12 +24,16 @@ header('Content-Disposition: attachment; filename=' . $filename);
 
 // Converts a timestamp to the appropriate string format.
 function dateToCal($timestamp) {
-  return date('Ymd\THisT', $timestamp);
+  return date('Ymd\THis', $timestamp);
 }
 
 // Escapes a string of characters.
 function escapeString($string) {
   return preg_replace('/([\,;])/','\\\$1', $string);
+}
+
+function formatTime($time) {
+	return str_pad(str_replace(":", "", $time), 4, "0", STR_PAD_LEFT);
 }
 
 $offset = 37;
@@ -45,6 +49,7 @@ METHOD:PUBLISH
 X-WR-CALNAME:Default Calendar
 X-WR-TIMEZONE:Europe/London
 
+<?php if(false) { ?>
 BEGIN:VTIMEZONE
 TZID:Europe/London
 X-LIC-LOCATION:Europe/London
@@ -63,7 +68,9 @@ DTSTART:19701025T020000
 RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
 END:STANDARD
 END:VTIMEZONE
+<?php } ?>
 	<?php
+	date_default_timezone_set("Europe/London");
 	foreach($events as $singleEvent)
 	{
 		$output = preg_split("/(,|-)/", $singleEvent["weeks"]);
@@ -72,8 +79,9 @@ END:VTIMEZONE
 		$year = $startYear + $yearAddOn;
 		$weekStartDate = date("Y-m-d", strtotime($year."W".$weekStart));
 		//echo "<br>".$singleEvent["day"];
-		$DTSTART = strtotime("next ".$singleEvent["day"], strtotime($weekStartDate)) + strtotime("1970-01-01T".$singleEvent["start"]);
-		$DTEND = $DTSTART + str_pad(strtotime("1970-01-01T".$singleEvent["duration"]), "0", STR_PAD_LEFT);
+		$DTSTART = strtotime("next ".$singleEvent["day"], strtotime($weekStartDate)) + strtotime("19700101T".formatTime($singleEvent["start"])."00Z");
+		$DTEND = $DTSTART + strtotime("19700101T".formatTime($singleEvent["duration"])."00Z");
+
 		/*$splitIndividuals = explode(",", $singleEvent["weeks"])
 		foreach ($splitIndividuals as $split)
 		{
@@ -134,31 +142,46 @@ END:VTIMEZONE
 
 BEGIN:VEVENT
 
-TZID:BST
-
-UID:<?= uniqid() ?>
-
-SUMMARY:<?= escapeString($singleEvent["activity"]." — ".$singleEvent["module"]) ?>
-
 DTSTART;TZID=Europe/London:<?= DateToCal($DTSTART) ?>
 
 DTEND;TZID=Europe/London:<?= dateToCal($DTEND) ?>
 
-DTSTAMP;TZID=Europe/London:<?= dateToCal(time()) ?>
+RRULE:FREQ=WEEKLY;WKST=MO;UNTIL=<?= dateToCal($WEEKUNTIL) ?>;BYDAY=<?= strtoupper(substr(date("D", $DTSTART), 0, 2)) ?>
 
-LOCATION:<?= escapeString($singleEvent["room"].", University of Nottingham") ?>
+<?php if(false)
+{ ?>
+	EXDATE;TZID=Europe/London:20131026T090000
+<?php } ?>
+
+DTSTAMP:<?= dateToCal(time()) ?>
+
+UID:<?= uniqid() ?>
+
+CREATED<?= dateToCal(time()) ?>
 
 DESCRIPTION:<?= escapeString($singleEvent["size"]." person ".strtolower($singleEvent["nameOfType"])." with ".$singleEvent["staff"].", lasting for ".$singleEvent["duration"]." hours.".$singleEvent["roomDescription"]) ?>
 
-URL;VALUE=URI:<?= escapeString($_POST["URLForImport"]) ?>
+LAST-MODIFIED:<?= dateToCal(time()) ?>
+
+LOCATION:<?= escapeString($singleEvent["room"].", University of Nottingham") ?>
 
 SEQUENCE:0
 
 STATUS:TENTATIVE
 
+SUMMARY:<?= escapeString($singleEvent["activity"]." — ".$singleEvent["module"]) ?>
+
 TRANSP:OPAQUE
 
-RRULE:FREQ=WEEKLY;WKST=MO;UNTIL=<?= dateToCal($WEEKUNTIL) ?>
+<?php if(false) { ?>URL;VALUE=URI:<?= escapeString($_POST["URLForImport"])?><?php } ?>
+
+
+
+
+
+
+
+
 
 END:VEVENT
 	<?php } ?>
