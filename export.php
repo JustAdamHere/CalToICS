@@ -1,6 +1,6 @@
 <?php
 
-define("PROD_VERSION", "0.0.2");
+define("PROD_VERSION", "0.2.2");
 
 $events = unserialize(base64_decode($_POST['dataForExport']));
 

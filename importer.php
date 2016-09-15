@@ -70,6 +70,8 @@
 				$eventCounter++;
 			}
 
+			echo "It is recommended that you import the file into a calendar seperate to other events. If the wrong calendar is imported, it may be difficult to delete only those imported using this file.";
+			echo "<br>";
 			echo "Great. We've imported the events. Before proceeding, please verify that the first event is correct:";
 			echo "<ul>";
 				echo "<li><strong>Activity</strong>: ".$events[0]["activity"]."</li>";#
