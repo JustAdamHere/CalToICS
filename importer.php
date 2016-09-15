@@ -1,11 +1,17 @@
+<?php
+	if (isset(($_POST['pageChooserSubmit'])))
+		$pageToUse = $_POST['pageChooser'];
+	else
+		$pageToUse = $_GET['page'];
+?>
 <html>
 	<head>
-		<title>Adam's CalToICS | Importer</title>
+		<title>Adam&#39;s CalToICS | Importer</title>
 	</head>
 	<body>
 		<form id="pageChooserForm" name="pageChooserForm" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
 			<label for="pageChooser">Enter the URL for the page which contains the calendar:</label>
-			<input id="pageChooser" name="pageChooser" type="text">
+			<input id="pageChooser" name="pageChooser" type="text" value="<?= $pageToUse ?>">
 
 			<input id="pageChooserSubmit" name="pageChooserSubmit" type="submit" value="Find Events" form="pageChooserForm">
 		</form>
