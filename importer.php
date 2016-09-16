@@ -70,6 +70,81 @@
 				$eventCounter++;
 			}
 
+			$roomNames = array(
+								"UP-CLIVEG" => "Sir Clive Granger Building",
+								"UP-HALLWARD" => "Hallward Library",
+								"UP-HEMSLEY" => "University Staff Club",
+								"UP-HIGH" => "Highfield House",
+								"UP-HUGHST" => "Hugh Stewart House",
+								"UP-LASS" => "Law and Social Sciences Building",
+								"UP-PORT" => "Portland Building",
+								"UP-TRNT" => "Trent Building",
+
+ 								"UP-ARCH-SRB" => "Sustainable Research Building",
+								"UP-ARTCEN" => "Arts Centre Lecture Theatre",
+								"UP-BOOTS" => "Boots Science Building",
+								"UP-COATESRD" => "Coates Road Auditorium",
+								"UP-CHEM" => "Chemistry Building",
+								"UP-COAT" => "Coates Building",
+								"UP-ESLC" => "Engineering and Science Learning Centre",
+								"UP-GEOGREEN" => "George Green Library",
+								"UP-KEIGHTON AUD" => "Keighton Auditorium",
+								"UP-KEIGHTON" => "Keighton Auditorium",
+								"UP-LIFESCI" => "Life Sciences Building",
+								"UP-MATH" => "Mathematical Sciences Building",
+								"UP-PHARM" => "Pharmacy Building",
+								"UP-PHYS" => "Physics Building",
+								"UP-POPE" => "Pope Building",
+								"UP-PRB" => "Pavement Research Building",
+								"UP-PSYC" => "Psychology Building",
+								"UP-TOWER" => "Tower Block",
+								"UP-WOLF" => "Wolfson Building",
+
+								"UP-HUMS" => "Humanities Building",
+								"UP-LENG" => "Lenton Grove",
+								"UP-WILL" => "Willoughby Hall",
+
+								"NMS-MEDSCH" => "Nottingham Medical School (NMS)",
+								"QMC-STHBLK" => "South Block",
+
+								"JC-AEROSPACE-TEC" => "Aerospace Technology Centre",
+								"JC-AMEN" => "Amenities Building",
+								"JC-BSNORTH" => "Business School North",
+								"JC-BSSOUTH" => "Business School South",
+								"JC-DEARING" => "Dearing Building",
+								"JC-ENERGY-TEC" => "Energy Technologies Building",
+								"JC-EXCHGE" => "The Exchange Building",
+								"JC-NGB" => "Nottingham Geospatial Building",
+								"JC-SI-YUAN-CENTRE" => "The Si Yuan Centre of Contemporary Chinese Studies",
+								"JC-YANG-Fujia" => "YANG Fujia Building",
+
+								"CITY-CLINSCI" => "Clinical Sciences Building&nbsp;",
+
+								"SB-GATE" => "Gateway&nbsp;Building",
+								"SB-LECTBLK" => "Lecture Room Block&nbsp;",
+								"SB-MAINBLDG" => "Main Building",
+								"SB-PLANTSCI" => "Plant Sciences Building",
+								"SB-VETSCH" => "Veterinary Sciences Building",
+								"SB-FOODSCI" => "Food Sciences Building",
+
+								"DERBY-DMS" => "Derby Medical School",
+								"DERBY-DSN" => "Derby School of Nursing",
+
+								"KMC-KM" => "Kings Meadow Campus"
+								);
+
+			// Replaces all room codes with the room name
+			for($i = 0; $i < $eventCounter; $i++)
+			{
+				// Need to try and change the order of the room name in the building.
+				/*if (strtr($events[$i]["room"], $roomNames))
+				{
+					$events[$i]["room"] = 
+				}*/
+
+				$events[$i]["room"] = strtr($events[$i]["room"], $roomNames);
+			}
+
 			echo "It is recommended that you import the file into a calendar seperate to other events. If the wrong calendar is imported, it may be difficult to delete only those imported using this file.";
 			echo "<br>";
 			echo "Great. We've imported the events. Before proceeding, please verify that the first event is correct:";
